@@ -1,0 +1,38 @@
+name: IPadTerm
+options:
+  bundleIdPrefix: dev.ipadterm
+  deploymentTarget:
+    iOS: "17.0"
+packages:
+  SwiftTerm:
+    url: https://github.com/migueldeicaza/SwiftTerm
+    exactVersion: 1.18.0
+  Citadel:
+    url: https://github.com/orlandos-nl/Citadel
+    from: 0.12.1
+targets:
+  SSHSmoke:
+    type: tool
+    platform: macOS
+    deploymentTarget: "15.0"
+    sources:
+      - Tools/SSHSmoke
+      - IPadTerm/SSHSession.swift
+    dependencies:
+      - package: Citadel
+  IPadTerm:
+    type: application
+    platform: iOS
+    sources: [IPadTerm]
+    dependencies:
+      - package: SwiftTerm
+      - package: Citadel
+    settings:
+      base:
+        TARGETED_DEVICE_FAMILY: "2,6"
+        SUPPORTS_MACCATALYST: YES
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        INFOPLIST_KEY_NSLocalNetworkUsageDescription: "同じネットワーク上の PC に SSH 接続するために使用します。"
