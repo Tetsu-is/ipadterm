@@ -28,26 +28,27 @@ final class SSHSession {
     private(set) var phase: SessionPhase = .connecting
 
     private let password: String
+    private let knownHosts: KnownHosts
     private let outbound: AsyncStream<Outbound>
     private let outboundContinuation: AsyncStream<Outbound>.Continuation
     private var task: Task<Void, Never>?
 
-    init(config: HostConfig, password: String) {
+    init(config: HostConfig, password: String, knownHosts: KnownHosts = KnownHosts()) {
         self.config = config
         self.password = password
+        self.knownHosts = knownHosts
         (outbound, outboundContinuation) = AsyncStream.makeStream(of: Outbound.self)
     }
 
     func start(cols: Int, rows: Int, onOutput: @escaping @MainActor (ArraySlice<UInt8>) -> Void) {
         guard task == nil else { return }
-        task = Task { [config, password, outbound] in
+        task = Task { [config, password, outbound, knownHosts] in
             do {
-                // TODO: known_hosts 相当の検証。MVP では中間者攻撃を検出できない。
                 let client = try await SSHClient.connect(
                     host: config.host,
                     port: config.port,
                     authenticationMethod: .passwordBased(username: config.username, password: password),
-                    hostKeyValidator: .acceptAnything(),
+                    hostKeyValidator: knownHosts.validator(for: config),
                     reconnect: .never
                 )
                 let request = SSHChannelRequestEvent.PseudoTerminalRequest(
