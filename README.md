@@ -27,6 +27,10 @@ scripts/ssh-smoke.sh
 
 Docker で使い捨ての OpenSSH サーバーを立て、アプリと同じ `SSHSession` で接続、コマンド実行、PTY リサイズ、`exit` での終了、ホスト鍵の記録と鍵変更時の拒否までを確認する。
 
+## フォント
+
+ターミナルは [JetBrainsMono Nerd Font Mono](https://github.com/ryanoasis/nerd-fonts) (SIL OFL 1.1, `IPadTerm/Fonts/OFL.txt`) で描画する。Nerd Font 版なので、プロンプトの Powerline / Git アイコンも表示できる。
+
 ## MVP の既知の制約
 
 - ホスト鍵は初回接続時のものを信頼して記録する (TOFU)。以降に鍵が変わると接続を拒否する。初回接続は信頼できるネットワークで行う。記録のリセット UI はまだ無い。

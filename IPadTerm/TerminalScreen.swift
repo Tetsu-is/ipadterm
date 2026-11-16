@@ -11,6 +11,7 @@ struct TerminalScreen: UIViewRepresentable {
 
     func makeUIView(context: Context) -> TerminalView {
         let view = TerminalView(frame: .zero)
+        TerminalFont.apply(to: view)
         view.terminalDelegate = context.coordinator
         let terminal = view.getTerminal()
         session.start(cols: terminal.cols, rows: terminal.rows) { [weak view] bytes in
